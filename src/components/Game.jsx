@@ -16,13 +16,15 @@ const Game = () => {
   const [userAnswer, setUserAnswer] = useState('')
   const [currentExplanation, setCurrentExplanation] = useState('""')
   const [playerHp, setPlayerHp] = useState(1000)
+  const [playerFlash, setPlayerFlash] = useState(false)
   const [bossHP, setBossHP] = useState(10000)
+  const [bossFlash, setBossFlash] = useState(false)
   const [multiplier, setMultiplier] = useState(1)
   const [highMult, setHighMult] = useState(1)
   const [streak, setStreak] = useState(0)
   const [bestStreak, setBestStreak] = useState(0)
   const [status, setStatus] = useState('')
-  
+
   const shuffleProblems = (array) => { //randomly shuffles problems array
     for (let i = array.length - 1; i > 0; i--) {
       let randomIndex = Math.floor(Math.random() * (i + 1))
@@ -31,18 +33,18 @@ const Game = () => {
       array[randomIndex] = store
     }
   }
-  
+
   useEffect(() => { //handles problem shuffling on initialization
     const shuffledProblems = [...problems]
     shuffleProblems(shuffledProblems)
     setProblems(shuffledProblems)
     setCurrentProblem(shuffledProblems[0])
   }, [])
-  
+
   const [lapse, setLapse] = useState(0)
   const [running, setRunning] = useState(false)
   const [elapsedTime, setElapsedTime] = useState()
-  
+
   useEffect(() => { //handles starting game timer 
     let startTime = Date.now()
 
@@ -85,16 +87,19 @@ const Game = () => {
     }
 
     setBossHP(bossHP - 100 * multiplier)
-    
+    setBossFlash(true)
+    setTimeout(() => setBossFlash(false), 500)
+
     if (streak > 0 && (streak + 1) % 5 === 0) {
       setMultiplier(multiplier + 0.5)
-    if(multiplier + + 0.5 > multiplier){
-      setHighMult(multiplier + 0.5)
-    }
+      if (multiplier + + 0.5 > multiplier) {
+        setHighMult(multiplier + 0.5)
+      }
     }
     setCorrect(true)
     setTimeout(() => setCorrect(false), 1000)
   }
+
 
 
   const handleIncorrectAnswer = () => { //handles events for an incorrect answer
@@ -102,6 +107,8 @@ const Game = () => {
     setStreak(0)
     setMultiplier(1)
     setPlayerHp(playerHp - 100)
+    setPlayerFlash(true)
+    setTimeout(() => setPlayerFlash(false), 500)
     setCurrentExplanation(currentProblem[2].explanation)
     setIncorrect(true)
     setTimeout(() => setIncorrect(false), 1000)
@@ -122,6 +129,16 @@ const Game = () => {
       setIndex(index + 1)
     }
   }
+
+  // useEffect(() => {
+  //   if (bossFlash) {
+  //     setTimeout(() => setBossFlash(false), 500)
+  //   }
+
+  //   if (playerFlash) {
+  //     setTimeout(() => setPlayerFlash(false), 500)
+  //   }
+  // }, [bossFlash, playerFlash])
 
   useEffect(() => {//useEffect in charge of shuffling problems as well as advancing problems and checking for player win loss
     if (index < problems.length) {
@@ -147,13 +164,13 @@ const Game = () => {
           <div id="bossElements">
             <ProgressBar id="bossHealthBar" variant="danger" label={`${bossHP}/100000`} now={bossHP} max={10000}></ProgressBar>
             Boss Health: {bossHP}
-            <div id="boss" style={{ height: '400px', width: '500px', backgroundColor: 'red' }}></div>
+            <div id="boss" className={bossFlash ? 'flash' : ''} style={{ height: '400px', width: '500px', backgroundColor: 'red' }}></div>
           </div>
 
           <div id="playerElements">
             <ProgressBar id="playerHealthBar" label={`${playerHp}/1000`} now={playerHp} max={1000} />
             Player Health: {playerHp}
-            <div id="player" style={{ height: '175px', width: '175px', backgroundColor: 'red' }}></div>
+            <div id="player" className={playerFlash ? 'flash' : ''} style={{ height: '175px', width: '175px', backgroundColor: 'red' }}></div>
           </div>
 
           <div id="interactiveArea">

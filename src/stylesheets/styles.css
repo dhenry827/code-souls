@@ -65,3 +65,17 @@
    margin-top: 2.5%;
    margin-bottom: 2.5%;
 }
+
+@keyframes flash {
+    0% {background-color: red;}
+    16.6% {background-color: yellow;}
+    33.3% {background-color: red;}
+    50% {background-color: yellow;}
+    66.6% {background-color: red;}
+    83.3% {background-color: yellow;}
+    100% {background-color: red;}
+}
+
+.flash {
+    animation: flash 0.5s ease-in-out;
+}
